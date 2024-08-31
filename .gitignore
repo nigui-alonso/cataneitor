@@ -4,9 +4,6 @@ node_modules/
 # Environment variables
 .env
 
-# Google Cloud service account keys
-*.json
-
 # Compiled JavaScript
 dist/
 
