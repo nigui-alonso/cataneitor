@@ -1,7 +1,7 @@
 import TelegramBot, { Message } from 'node-telegram-bot-api';
 import dotenv from 'dotenv';
 import { addPlayersToSheet, addResultToSheet, loadPlayersFromSheet } from './sheetsService';
-import { GameSession } from './GameSession';
+import { GameSession } from './gameSession';
 
 // Load environment variables
 dotenv.config();

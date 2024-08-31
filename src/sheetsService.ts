@@ -1,8 +1,7 @@
 import { google } from 'googleapis';
 import { JWT } from 'google-auth-library';
-import { GameSession } from './GameSession';
+import { GameSession } from './gameSession';
 import dotenv from 'dotenv';
-
 
 dotenv.config();
 
