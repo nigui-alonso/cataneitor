@@ -1,0 +1,18 @@
+# Node modules
+node_modules/
+
+# Environment variables
+.env
+
+# Google Cloud service account keys
+*.json
+
+# Compiled JavaScript
+dist/
+
+# Logs
+*.log
+
+# Operating System Files
+.DS_Store
+Thumbs.db
