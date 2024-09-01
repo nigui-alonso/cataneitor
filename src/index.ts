@@ -24,18 +24,6 @@ function isAuthorized(userId: number): boolean {
   return authorizedUsers.includes(userId);
 }
 
-function startServer() {
-  const server = http.createServer((req, res) => {
-    res.writeHead(200);
-    res.end('Bot is running!');
-  });
-
-  const PORT = process.env.PORT || 8080;
-  server.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
-  });
-}
-
 async function setBotCommands() {
   try {
     await bot.setMyCommands([
@@ -274,5 +262,14 @@ bot.onText(/\/cancel/, async (msg) => {
   }
 });
 
-startServer()
 setBotCommands();
+
+const server = http.createServer((req, res) => {
+  res.writeHead(200);
+  res.end('Bot is running!');
+});
+
+const PORT = process.env.PORT || 8080;
+server.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
+});
