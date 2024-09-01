@@ -16,6 +16,10 @@ const authorizedUsers = process.env.AUTHORIZED_USERS
   ? process.env.AUTHORIZED_USERS.split(',').map(id => parseInt(id.trim(), 10))
   : [];
 
+  if (!token) {
+    throw new Error('TELEGRAM_BOT_TOKEN must be provided!');
+  }
+
 function isAuthorized(userId: number): boolean {
   return authorizedUsers.includes(userId);
 }

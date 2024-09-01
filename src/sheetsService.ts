@@ -6,9 +6,18 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 const spreadsheetId = process.env.GOOGLE_SHEETS_ID;
+const keyFile = process.env.GOOGLE_APPLICATION_CREDENTIALS
+
+if (!spreadsheetId) {
+  throw new Error('GOOGLE_APPLICATION_CREDENTIALS must be provided!');
+}
+
+if (!keyFile) {
+  throw new Error('GOOGLE_SHEETS_ID must be provided!');
+}
 
 const auth = new google.auth.GoogleAuth({
-  keyFile: process.env.GOOGLE_APPLICATION_CREDENTIALS,
+  keyFile: keyFile,
   scopes: ['https://www.googleapis.com/auth/spreadsheets'],
 });
 
