@@ -2,6 +2,7 @@ import TelegramBot, { Message } from 'node-telegram-bot-api';
 import dotenv from 'dotenv';
 import { addPlayersToSheet, addResultToSheet, loadPlayersFromSheet } from './sheetsService';
 import { GameSession } from './gameSession';
+import http from 'http';
 
 // Load environment variables
 dotenv.config();
@@ -19,11 +20,23 @@ function isAuthorized(userId: number): boolean {
   return authorizedUsers.includes(userId);
 }
 
+function startServer() {
+  const server = http.createServer((req, res) => {
+    res.writeHead(200);
+    res.end('Bot is running!');
+  });
+
+  const PORT = process.env.PORT || 8080;
+  server.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
+  });
+}
+
 async function setBotCommands() {
   try {
     await bot.setMyCommands([
       { command: '/new', description: 'Cargar resultados' },
-      { command: '/player', description: 'Carga jugador nuevo' },
+      { command: '/player', description: 'Cargar jugador nuevo' },
       { command: '/cancel', description: 'Cancelar partida' },
       { command: '/help', description: 'Mostrar ayuda' },
       // Add more commands as needed
@@ -257,5 +270,5 @@ bot.onText(/\/cancel/, async (msg) => {
   }
 });
 
+startServer()
 setBotCommands();
-console.log('Bot is running...')

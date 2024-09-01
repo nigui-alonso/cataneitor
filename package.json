@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node dist/index.js",
     "build": "npx tsc",
-    "dev": "npm run build && nodemon dist/index.js",
+    "dev": "nodemon --watch 'src/**/*.ts' --exec 'ts-node' src/index.ts",
     "watch": "npx tsc -w"
   },
   "dependencies": {
@@ -19,7 +19,7 @@
     "@types/node": "^18.16.3",
     "@types/node-telegram-bot-api": "^0.61.6",
     "nodemon": "^2.0.22",
-    "ts-node": "^10.9.1",
+    "ts-node": "^10.9.2",
     "typescript": "^5.5.4"
   }
 }
