@@ -8,7 +8,7 @@ dotenv.config();
 const spreadsheetId = process.env.GOOGLE_SHEETS_ID;
 
 if (!spreadsheetId) {
-  throw new Error('GOOGLE_APPLICATION_CREDENTIALS must be provided!');
+  throw new Error('GOOGLE_SHEETS_ID must be provided!');
 }
 
 const auth = new google.auth.GoogleAuth({
@@ -83,7 +83,6 @@ export async function addResultToSheet(gameSession: GameSession) {
 }
 
 export async function addPlayersToSheet(newPlayers: string): Promise<string[]> {
-  try {
     const authClient = await auth.getClient() as JWT;
     const sheets = google.sheets({ version: 'v4', auth: authClient });
 
@@ -105,15 +104,12 @@ export async function addPlayersToSheet(newPlayers: string): Promise<string[]> {
       resource: { values },
     };
 
-    console.log('Request to Google Sheets API:', JSON.stringify(request.resource.values, null, 2));
-
-    const response = await sheets.spreadsheets.values.append(request);
-
-    console.log('Response from Google Sheets API:', JSON.stringify(response.data, null, 2));
-
-    return values.map(v => v[0]);
-  } catch (error) {
-    console.error('Error appending to sheet:', error);
-    throw error;
-  }
+    try {
+      await sheets.spreadsheets.values.append(request);
+      console.log('Jugadores agregados exitosamente a la hoja de cálculo.');
+      return values.map(v => v[0]);
+    } catch (error) {
+      console.error('Error al agregar jugadores a la hoja de cálculo:', error);
+      throw error;
+    }
 }

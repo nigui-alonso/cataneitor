@@ -2,23 +2,67 @@ import TelegramBot, { Message } from 'node-telegram-bot-api';
 import dotenv from 'dotenv';
 import { addPlayersToSheet, addResultToSheet, loadPlayersFromSheet } from './sheetsService';
 import { GameSession } from './gameSession';
-import http from 'http';
+import express from 'express';
 
 // Load environment variables
 dotenv.config();
 
 // Use environment variables
 const token = process.env.TELEGRAM_BOT_TOKEN;
-const bot: TelegramBot = new TelegramBot(token!, { polling: true });
+const webhookUrl = process.env.WEBHOOK_URL;
+const port = process.env.PORT || 3000;
+
+if (!token) {
+  throw new Error('TELEGRAM_BOT_TOKEN must be provided!');
+}
+
+if (!webhookUrl) {
+  throw new Error('WEBHOOK_URL must be provided!');
+}
+
+const bot: TelegramBot = new TelegramBot(token);
 const gameSessionsMap = new Map<number, GameSession>();
+
+const app = express();
+
+// Parse the updates to JSON
+app.use(express.json());
+
+// Set the webhook
+async function setupWebhook() {
+  try {
+    const webhookInfo = await bot.getWebHookInfo();
+    if (webhookInfo.url !== webhookUrl) {
+      console.log(`Updating webhook from ${webhookInfo.url} to ${webhookUrl}`);
+      await bot.setWebHook(`${webhookUrl}/bot${token}`);
+      console.log('Webhook updated successfully');
+    } else {
+      console.log('Webhook is already up to date');
+    }
+  } catch (error) {
+    console.error('Failed to set webhook:', error);
+  }
+}
+
+setupWebhook();
+
+// Webhook endpoint
+app.post(`/bot${token}`, (req: { body: TelegramBot.Update; }, res: { sendStatus: (arg0: number) => void; }) => {
+  console.log('Received update:', JSON.stringify(req.body));
+  bot.processUpdate(req.body);
+  res.sendStatus(200);
+});
+
+// Start Express Server
+app.listen(port, () => {
+  console.log(`Express server is listening on ${port}`);
+});
+
 
 const authorizedUsers = process.env.AUTHORIZED_USERS
   ? process.env.AUTHORIZED_USERS.split(',').map(id => parseInt(id.trim(), 10))
   : [];
 
-  if (!token) {
-    throw new Error('TELEGRAM_BOT_TOKEN must be provided!');
-  }
 
 function isAuthorized(userId: number): boolean {
   return authorizedUsers.includes(userId);
@@ -263,13 +307,3 @@ bot.onText(/\/cancel/, async (msg) => {
 });
 
 setBotCommands();
-
-const server = http.createServer((req, res) => {
-  res.writeHead(200);
-  res.end('Bot is running!');
-});
-
-const PORT = process.env.PORT || 8080;
-server.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
-});
